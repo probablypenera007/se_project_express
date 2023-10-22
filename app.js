@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -9,6 +10,11 @@ mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db', {
 });
 
 const db = mongoose.connection;
+
+const routes = require('./routes');
+
+app.use(express.json());
+app.use(routes);
 
 db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
