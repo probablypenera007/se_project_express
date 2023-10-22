@@ -10,11 +10,11 @@ const clothingItem = new mongoose.Schema({
     type: String,
     required: true,
   },
-  imageUrl: {
+  imageURL: {
     type: String,
     required: true,
     validate: {
-      validator: (v) => validator.isUrl(v),
+      validator: (v) => validator.isURL(v),
       message: 'Link user input is invalid',
     },
   },
