@@ -11,9 +11,9 @@ const createItem = (req, res) => {
     console.log(item, 'THIS IS CLOTHING ITEM CONTROLLER');
     res.send({ data: item });
   }).catch((e) => {
-    res.status(500).send({ message: 'Error from controllers, clothingITem', e });
+    res.status(500).send({ message: 'Error from controllers, clothingItem', e });
   });
 };
 module.exports = {
-  createItem,
+  createItem
 };

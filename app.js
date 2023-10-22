@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const { PORT = 3001 } = process.env;
 const app = express();
+app.use(express.json());
 mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -13,7 +14,7 @@ const db = mongoose.connection;
 
 const routes = require('./routes');
 
-app.use(express.json());
+
 app.use(routes);
 
 db.on('error', console.error.bind(console, 'Connection error:'));
