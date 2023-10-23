@@ -29,7 +29,6 @@ const getItems = (req, res) => {
     .catch((e) => {
       res.status(500).send({ message: 'GET ITEMS ERRRORRR!', e });
     });
-
 };
 
 const updateItem = (req, res) => {
