@@ -10,7 +10,7 @@ const createItem = (req, res) => {
   ClothingItem.create({ name, weather, imageURL })
     .then((item) => {
       console.log(item, 'THIS IS CLOTHING ITEM CONTROLLER');
-      res.send({ data: item });
+      res.status(200).send({ data: item });
     })
     .catch((e) => {
       res
@@ -19,6 +19,7 @@ const createItem = (req, res) => {
           message: 'Error from controllers, clothingItem, createItem',
           e,
         });
+
     });
 };
 
@@ -28,13 +29,16 @@ const getItems = (req, res) => {
     .catch((e) => {
       res.status(500).send({ message: 'GET ITEMS ERRRORRR!', e });
     });
+
 };
 
 const updateItem = (req, res) => {
   const { itemId } = req.params;
   const { imageURL } = req.body;
-  ClothingItem.findByIdAndUpdate(itemId, { $set: imageURL }, { new: true })
-    .orFail()
+
+  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } }, { new: true })
+  // ClothingItem.findByIdAndUpdate(itemId, { $set: imageURL }, { new: true })
+  //   .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       res.status(500).send({ message: 'UPDATE ITEMS ERRRRROORRRR!', e });
