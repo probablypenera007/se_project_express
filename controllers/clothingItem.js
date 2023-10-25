@@ -5,9 +5,9 @@ const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
 
-  const { name, weather, imageURL } = req.body;
+  const { name, weather, imageUrl } = req.body;
 
-  ClothingItem.create({ name, weather, imageURL })
+  ClothingItem.create({ name, weather, imageUrl })
     .then((item) => {
       console.log(item, 'THIS IS CLOTHING ITEM CONTROLLER');
       res.status(200).send({ data: item });
@@ -19,7 +19,6 @@ const createItem = (req, res) => {
           message: 'Error from controllers, clothingItem, createItem',
           e,
         });
-
     });
 };
 
