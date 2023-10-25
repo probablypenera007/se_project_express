@@ -33,7 +33,7 @@ const getItems = (req, res) => {
 const updateItem = (req, res) => {
   const { itemId } = req.params;
   const { imageUrl } = req.body;
-
+  console.log(itemId, imageUrl);
   // ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
    ClothingItem.findByIdAndUpdate(itemId, { $set: {imageUrl} })
      .orFail()
@@ -47,7 +47,7 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId).orFail().then.((item) => res.status(204).send({}))
+  ClothingItem.findByIdAndDelete(itemId).orFail().then(() => res.status(200).send({}))
   .catch((e) => {
     res.status(500).send({ message: 'DELETEEE ITEMS ERRRRROORRRR!', e });
   });

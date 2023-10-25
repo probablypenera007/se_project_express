@@ -13,7 +13,7 @@ router.get('/', getItems);
 router.put('/:itemId', updateItem);
 
 // Delete
-router.delete('/:ItemId', deleteItem);
+router.delete('/:itemId', deleteItem);
 
 module.exports = router;
 
