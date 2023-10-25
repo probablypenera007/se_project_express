@@ -32,9 +32,9 @@ const getItems = (req, res) => {
 
 const updateItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
+  const { imageUrl } = req.body;
 
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } }, { new: true })
+  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
   // ClothingItem.findByIdAndUpdate(itemId, { $set: imageURL }, { new: true })
   //   .orFail()
     .then((item) => res.status(200).send({ data: item }))
