@@ -39,7 +39,7 @@ const getMainUser = (req, res) => {
      .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((e) => {
-      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
+      res.status(ERRORS.NOT_FOUND.STATUS).send({ message:ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
     });
 };
 
@@ -52,6 +52,9 @@ const getMainUser = (req, res) => {
 //     res.status(500).send({ message: 'DELETEEE ITEMS ERRRRROORRRR!', e });
 //   });
 // }
+
+
+
 
 module.exports = {
   createUser,

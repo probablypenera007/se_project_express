@@ -53,11 +53,33 @@ const deleteItem = (req, res) => {
   });
 }
 
+const likeItem = (req, res) => {
+  const { itemId } = req.params;
+
+ClothingItem.findByIdAndUpdate(itemId, { $set: { likes: req.user._id } })
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
+    });
+};
+
+const dislikeItem = (req, res) => {
+  const { itemId } = req.params;
+
+ClothingItem.findByIdAndUpdate(itemId, { $set: { likes: req.user._id } })
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
+    });
+};
+
+
+
 module.exports = {
   createItem,
   getItems,
   updateItem,
   deleteItem,
-  // likeItem,
-  // dislikeItem
+  likeItem,
+  dislikeItem
 };
