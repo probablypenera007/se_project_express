@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const ClothingItem = require('../models/clothingItem');
+const ERRORS = require('../utils/errors');
 
 const createItem = (req, res) => {
   console.log(req);
@@ -14,10 +15,9 @@ const createItem = (req, res) => {
     })
     .catch((e) => {
       res
-        .status(500)
+        .status(ERRORS.BAD_REQUEST.STATUS)
         .send({
-          message: 'Error from controllers, clothingItem, createItem',
-          e,
+          message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e
         });
     });
 };
@@ -26,7 +26,7 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((e) => {
-      res.status(500).send({ message: 'GET ITEMS ERRRORRR!', e });
+      res.status(ERRORS.NOT_FOUND.STATUS).send({ message:ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
     });
 };
 
@@ -39,7 +39,7 @@ const updateItem = (req, res) => {
      .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      res.status(500).send({ message: 'UPDATE ITEMS ERRRRROORRRR!', e });
+      res.status(ERRORS.NOT_FOUND.STATUS).send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
     });
 };
 
@@ -49,7 +49,7 @@ const deleteItem = (req, res) => {
   console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId).orFail().then(() => res.status(200).send({}))
   .catch((e) => {
-    res.status(500).send({ message: 'DELETEEE ITEMS ERRRRROORRRR!', e });
+    res.status(ERRORS.NOT_FOUND.STATUS).send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
   });
 }
 

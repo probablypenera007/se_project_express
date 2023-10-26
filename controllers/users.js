@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const Users = require('../models/user');
+const ERRORS = require('../utils/errors');
 
 const createUser = (req, res) => {
   console.log(req);
@@ -14,10 +15,9 @@ const createUser = (req, res) => {
     })
     .catch((e) => {
       res
-        .status(500)
+        .status(ERRORS.BAD_REQUEST.STATUS)
         .send({
-          message: 'Error from controllers, clothingItem, createItem',
-          e,
+          message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e
         });
     });
 };
@@ -26,7 +26,7 @@ const getUsers = (req, res) => {
   Users.find({})
     .then((users) => res.status(200).send(users))
     .catch((e) => {
-      res.status(500).send({ message: 'GET USERS ERRRORRR!', e });
+      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
     });
 };
 
@@ -39,7 +39,7 @@ const getMainUser = (req, res) => {
      .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((e) => {
-      res.status(500).send({ message: 'GET DAT USER ERRRRROORRRR!', e });
+      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
     });
 };
 
