@@ -58,4 +58,6 @@ module.exports = {
   getItems,
   updateItem,
   deleteItem,
+  // likeItem,
+  // dislikeItem,
 };
