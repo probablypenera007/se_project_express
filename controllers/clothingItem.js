@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-const ClothingItem = require('../models/clothingItem');
-const ERRORS = require('../utils/errors');
+const ClothingItem = require("../models/clothingItem");
+const ERRORS = require("../utils/errors");
 
 const createItem = (req, res) => {
   console.log(req);
@@ -11,15 +11,14 @@ const createItem = (req, res) => {
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       console.log(req.user._id);
-      console.log(item, 'THIS IS CLOTHING ITEM CONTROLLER');
+      console.log(item, "THIS IS CLOTHING ITEM CONTROLLER");
       res.status(200).send({ data: item });
     })
     .catch((e) => {
-      res
-        .status(ERRORS.BAD_REQUEST.STATUS)
-        .send({
-          message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e
-        });
+      res.status(ERRORS.BAD_REQUEST.STATUS).send({
+        message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE,
+        e,
+      });
     });
 };
 
@@ -27,7 +26,9 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((e) => {
-      res.status(ERRORS.NOT_FOUND.STATUS).send({ message:ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
+      res
+        .status(ERRORS.NOT_FOUND.STATUS)
+        .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
     });
 };
 
@@ -36,11 +37,13 @@ const updateItem = (req, res) => {
   const { imageUrl } = req.body;
   console.log(itemId, imageUrl);
   // ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
-   ClothingItem.findByIdAndUpdate(itemId, { $set: {imageUrl} })
-     .orFail()
+  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
+    .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      res.status(ERRORS.NOT_FOUND.STATUS).send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
+      res
+        .status(ERRORS.NOT_FOUND.STATUS)
+        .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
     });
 };
 
@@ -48,33 +51,43 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId).orFail().then(() => res.status(200).send({}))
-  .catch((e) => {
-    res.status(ERRORS.NOT_FOUND.STATUS).send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
-  });
-}
+  ClothingItem.findByIdAndDelete(itemId)
+    .orFail()
+    .then(() => res.status(200).send({}))
+    .catch((e) => {
+      res
+        .status(ERRORS.NOT_FOUND.STATUS)
+        .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
+    });
+};
 
 const likeItem = (req, res) => {
   const { itemId } = req.params;
 
-ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: req.user._id } })
+  ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: req.user._id } })
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
+      res
+        .status(ERRORS.BAD_REQUEST.STATUS)
+        .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
     });
 };
 
 const dislikeItem = (req, res) => {
   const { itemId } = req.params;
 
-ClothingItem.findByIdAndUpdate(itemId, { $pull: { likes: req.user._id } })
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
+      res
+        .status(ERRORS.BAD_REQUEST.STATUS)
+        .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
     });
 };
-
-
 
 module.exports = {
   createItem,
@@ -82,5 +95,5 @@ module.exports = {
   updateItem,
   deleteItem,
   likeItem,
-  dislikeItem
+  dislikeItem,
 };
