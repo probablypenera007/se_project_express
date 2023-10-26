@@ -59,5 +59,5 @@ module.exports = {
   updateItem,
   deleteItem,
   // likeItem,
-  // dislikeItem,
+  // dislikeItem
 };
