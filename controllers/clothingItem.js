@@ -10,6 +10,7 @@ const createItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
+      console.log(req.user._id);
       console.log(item, 'THIS IS CLOTHING ITEM CONTROLLER');
       res.status(200).send({ data: item });
     })
@@ -56,7 +57,7 @@ const deleteItem = (req, res) => {
 const likeItem = (req, res) => {
   const { itemId } = req.params;
 
-ClothingItem.findByIdAndUpdate(itemId, { $set: { likes: req.user._id } })
+ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: req.user._id } })
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
@@ -66,7 +67,7 @@ ClothingItem.findByIdAndUpdate(itemId, { $set: { likes: req.user._id } })
 const dislikeItem = (req, res) => {
   const { itemId } = req.params;
 
-ClothingItem.findByIdAndUpdate(itemId, { $set: { likes: req.user._id } })
+ClothingItem.findByIdAndUpdate(itemId, { $pull: { likes: req.user._id } })
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
