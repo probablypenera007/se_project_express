@@ -1,4 +1,8 @@
-
+module.exports = {
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+};
 
 
 // 400 — invalid data passed to the methods for creating an item/user or updating an item, or invalid ID passed to the params.

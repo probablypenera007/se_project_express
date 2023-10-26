@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const Users = require('../models/clothingItem');
+const Users = require('../models/user');
 
 const createUser = (req, res) => {
   console.log(req);
