@@ -5,28 +5,21 @@ const Users = require('../models/user');
 const ERRORS = require('../utils/errors');
 
 const createUser = (req, res) => {
-  console.log(req);
-  console.log(req.body);
-
   const { name, avatar } = req.body;
 
   Users.create({ name, avatar })
-    .then((user) => {
-      console.log(user, 'THIS IS USER CONTROLLER');
-      res.status(200).send({ data: user });
-    })
-    .catch((e) => {
-      res
-        .status(ERRORS.BAD_REQUEST.STATUS)
-        .send({
-          message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e
-        });
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
+      }
+      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
     });
-};
+  };
 // [-] [GET] Get a user with an _id that does not exist in the database
 const getUsers = (req, res) => {
   Users.find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.send({ data : users }))
     .catch((e) => {
       res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message:ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
     });
