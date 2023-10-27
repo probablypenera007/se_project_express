@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-/* eslint-disable no-console */
+
 const mongoose = require('mongoose');
 const ClothingItem = require("../models/clothingItem");
 const ERRORS = require("../utils/errors");
@@ -58,14 +58,15 @@ const updateItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+console.log("I want to delete this ID:" , itemId);
 
 if (!mongoose.Types.ObjectId.isValid(itemId)) {
-  return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
+  return res.status(ERRORS.NOT_FOUND.STATUS).send({message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE});
 }
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findByIdAndDelete(itemId, {new: false})
     .orFail(() => {
-      const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
-      error.statusCode = ERRORS.NOT_FOUND.STATUS;
+      const error = new Error(ERRORS.BAD_REQUEST.DEFAULT_MESSAGE);
+      error.statusCode = ERRORS.BAD_REQUEST.STATUS;
       throw error;
     })
     .then(() => res.status(200).send({}))
@@ -81,12 +82,13 @@ if (!mongoose.Types.ObjectId.isValid(itemId)) {
 
 const likeItem = (req, res) => {
   const { itemId } = req.params;
+  const userId = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
   }
 
-  ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: req.user._id } }, {new: true})
+  ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: userId } }, {new: true})
     .then((item) => res.status(200 || 201).send({ data: item }))
     .orFail(() => {
       const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
@@ -105,6 +107,7 @@ const likeItem = (req, res) => {
 
 const dislikeItem = (req, res) => {
   const { itemId } = req.params;
+   const userId = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
@@ -112,10 +115,16 @@ const dislikeItem = (req, res) => {
 
   ClothingItem.findByIdAndUpdate(
     itemId,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes: userId } },
     { new: true },
   )
     .then((item) => res.status(200).send({ data: item }))
+
+    .orFail(() => {
+      const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+      error.statusCode = ERRORS.NOT_FOUND.STATUS;
+      throw error;
+    })
     .catch((e) => {
       if (e.statusCode) {
         return res.status(e.statusCode).send({ message: e.message });
