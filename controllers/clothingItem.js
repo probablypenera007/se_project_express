@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 /* eslint-disable consistent-return */
 
 const mongoose = require('mongoose');
@@ -68,20 +68,20 @@ const getItems = (req, res) => {
   }
 };
 
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-  console.log(itemId, imageUrl);
-  // ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
-    .then((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      res
-        .status(ERRORS.NOT_FOUND.STATUS)
-        .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
-    });
-};
+// const updateItem = (req, res) => {
+//   const { itemId } = req.params;
+//   const { imageUrl } = req.body;
+//   console.log(itemId, imageUrl);
+//   // ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
+//   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
+//     .orFail()
+//     .then((item) => res.status(200).send({ data: item }))
+//     .catch((e) => {
+//       res
+//         .status(ERRORS.NOT_FOUND.STATUS)
+//         .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
+//     });
+// };
 
 // reminder: non-existent Id should be for 404 NOT FOUND, incorret ID is 400 BAD REQUEST based on POSTMAN
 // .orFail(() => {       --- error handling reference, chapter 8 handling errors in JS
@@ -116,20 +116,29 @@ if (!mongoose.Types.ObjectId.isValid(itemId)) {
 
 const likeItem = (req, res) => {
   const { itemId } = req.params;
-
+  console.log(`[likeItem] Received itemId: ${itemId}`)
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
   }
 
+  console.log(`[likeItem] Attempting to like item with itemId: ${itemId} for user: ${req.user._id}`);
+
   ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: req.user._id } }, {new: true})
-    .then((item) => res.status(201).send({ data: item }))
-    .orFail(() => {
-      const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
-      error.statusCode = ERRORS.NOT_FOUND.STATUS;
-      throw error;
-    })
+    .then((item) => {
+      if(!item) {
+        console.log('[likeItem] Item not found for itemId:', itemId);
+        const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+        error.statusCode = ERRORS.NOT_FOUND.STATUS;
+        throw error;
+      }
+      console.log('[likeItem] Item updated successfully:', item);
+
+    return res.status(201).send({ data: item })
+})
+
     .catch((e) => {
+      console.log('[likeItem] Error occurred:', e.message);
       if (e.statusCode) {
         return res.status(e.statusCode).send({ message: e.message });
       }
@@ -167,7 +176,6 @@ const dislikeItem = (req, res) => {
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,

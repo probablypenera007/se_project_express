@@ -2,6 +2,9 @@ const router = require('express').Router();
 const clothingItem = require('./clothingItem');
 const user = require('./users');
 const ERRORS = require('../utils/errors');
+const { likeItem } = require('../controllers/clothingItem');
+
+
 
 router.use('/items', clothingItem);
 router.use('/users', user)
@@ -13,6 +16,7 @@ router.use('/users', user)
 // })
 
 router.use((req, res) => {
+  console.log("i am firing for likeItem:" , likeItem)
   res
     .status(ERRORS.NOT_FOUND.STATUS)
     .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
