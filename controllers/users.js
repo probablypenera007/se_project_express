@@ -31,7 +31,7 @@ const getUsers = (req, res) => {
 };
 
 const getMainUser = (req, res) => {
-  const { userId } = req.params.userId;
+  const {userId} = req.params;
 
   console.log(userId);
   // ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
@@ -39,7 +39,7 @@ const getMainUser = (req, res) => {
      .orFail()
     .then((user) => res.status(200).send({ data: user }))
     .catch((e) => {
-      res.status(ERRORS.NOT_FOUND.STATUS).send({ message:ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
+      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
     });
 };
 

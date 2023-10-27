@@ -18,9 +18,9 @@ router.use((req, res) => {
     .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
 });
 
-router.use((req, res) => {
-  res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({
-    message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE,
-  });
-});
+// router.use((req, res) => {
+//   res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({
+//     message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE,
+//   });
+// });
 module.exports = router;
