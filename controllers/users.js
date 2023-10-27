@@ -20,8 +20,8 @@ const createUser = (req, res) => {
 const getUsers = (req, res) => {
   Users.find({})
     .then((users) => res.send({ data : users }))
-    .catch((e) => {
-      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message:ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
+    .catch(() => {
+      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message:ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE});
     });
 };
 
