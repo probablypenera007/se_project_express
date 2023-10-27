@@ -1,4 +1,6 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
+const mongoose = require('mongoose');
 const Users = require('../models/user');
 const ERRORS = require('../utils/errors');
 
@@ -26,7 +28,7 @@ const getUsers = (req, res) => {
   Users.find({})
     .then((users) => res.status(200).send(users))
     .catch((e) => {
-      res.status(ERRORS.NOT_FOUND.STATUS).send({ message:ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
+      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message:ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
     });
 };
 
@@ -34,12 +36,23 @@ const getMainUser = (req, res) => {
   const {userId} = req.params;
 
   console.log(userId);
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
+  }
   // ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
    Users.findById(userId)
-     .orFail()
+     .orFail(() => {
+      const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+      error.statusCode = ERRORS.NOT_FOUND.STATUS;
+      throw error;
+     })
     .then((user) => res.status(200).send({ data: user }))
     .catch((e) => {
-      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
+      if (e.statusCode) {
+        return res.status(e.statusCode).send({ message: e.message });
+      }
+      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message:ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
     });
 };
 

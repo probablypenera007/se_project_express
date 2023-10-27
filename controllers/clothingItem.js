@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
 
 const mongoose = require('mongoose');
@@ -29,9 +30,9 @@ const createItem = (req, res) => {
 
 
 const getItems = (req, res) => {
-  const { itemId } = req.query;
+  const { itemId , checkMissing} = req.query;
 
-  if (itemId) {
+  if (itemId && checkMissing) {
 
     if (!mongoose.Types.ObjectId.isValid(itemId)) {
       return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
@@ -40,14 +41,14 @@ const getItems = (req, res) => {
     ClothingItem.findById(itemId)
       .then(item => {
         if (!item) {
-          return res.status(ERRORS.NOT_FOUND.STATUS).send({message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE});
+          return res.status(200).send({message: "item is missing in database after delete", itemId});
         }
 
         if (item.likes.length === 0) {
-          return res.status(200).send({ message: "Item has no likes.", itemId });
+          return res.status(200).send({ message: "Item has no likes after delete.", itemId });
         }
 
-        return res.status(200).send({ message: "Item has likes.", itemId, likesCount: item.likes.length });
+        return res.status(200).send({ message: "Item has likes and exists in database after delete.", itemId, likesCount: item.likes.length });
       })
       .catch(e => {
         res
@@ -122,7 +123,7 @@ const likeItem = (req, res) => {
   }
 
   ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: req.user._id } }, {new: true})
-    .then((item) => res.status(200 || 201).send({ data: item }))
+    .then((item) => res.status(201).send({ data: item }))
     .orFail(() => {
       const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
       error.statusCode = ERRORS.NOT_FOUND.STATUS;
@@ -147,23 +148,19 @@ const dislikeItem = (req, res) => {
 
   ClothingItem.findByIdAndUpdate(
     itemId,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes:  mongoose.Types.ObjectId(req.user._id) } },
     { new: true },
   )
-    .then((item) => res.status(200).send({ data: item }))
-
-    .orFail(() => {
-      const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
-      error.statusCode = ERRORS.NOT_FOUND.STATUS;
-      throw error;
-    })
+    .orFail(new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE))
+    .then((item) => res.status(200).send({ data: item}))
     .catch((e) => {
+      if (e.message === ERRORS.NOT_FOUND.DEFAULT_MESSAGE) {
+        return res.status(ERRORS.NOT_FOUND.STATUS).send({ message: e.message });
+      }
       if (e.statusCode) {
         return res.status(e.statusCode).send({ message: e.message });
       }
-      res
-        .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-        .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
+      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
     });
 };
 
