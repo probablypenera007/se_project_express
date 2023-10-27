@@ -8,9 +8,9 @@ const createItem = (req, res) => {
 
   console.log(req.body);
 
-  const { name, weather, imageUrl } = req.body;
+  const { name, weather, imageUrl, likes } = req.body;
 
-  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id, likes })
     .then((item) => {
       console.log(req.user._id);
       console.log(item, "THIS IS CLOTHING ITEM CONTROLLER");
@@ -24,7 +24,39 @@ const createItem = (req, res) => {
     });
 };
 
+// [+] [GET] Check if an item has no likes after delete it = DONE!!!!!
+//  [GET] Check if an item is missing in the database after deleting it
+
+
 const getItems = (req, res) => {
+  const { itemId } = req.query;
+
+  if (itemId) {
+
+    if (!mongoose.Types.ObjectId.isValid(itemId)) {
+      return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
+    }
+
+    ClothingItem.findById(itemId)
+      .then(item => {
+        if (!item) {
+          return res.status(ERRORS.NOT_FOUND.STATUS).send({message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE});
+        }
+
+        if (item.likes.length === 0) {
+          return res.status(200).send({ message: "Item has no likes.", itemId });
+        }
+
+        return res.status(200).send({ message: "Item has likes.", itemId, likesCount: item.likes.length });
+      })
+      .catch(e => {
+        res
+          .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
+          .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
+      });
+
+  } else {
+
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((e) => {
@@ -32,6 +64,7 @@ const getItems = (req, res) => {
         .status(ERRORS.NOT_FOUND.STATUS)
         .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
     });
+  }
 };
 
 const updateItem = (req, res) => {
@@ -82,13 +115,13 @@ if (!mongoose.Types.ObjectId.isValid(itemId)) {
 
 const likeItem = (req, res) => {
   const { itemId } = req.params;
-  const userId = req.user._id;
+
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
   }
 
-  ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: userId } }, {new: true})
+  ClothingItem.findByIdAndUpdate(itemId, { $addToSet: { likes: req.user._id } }, {new: true})
     .then((item) => res.status(200 || 201).send({ data: item }))
     .orFail(() => {
       const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
@@ -107,7 +140,6 @@ const likeItem = (req, res) => {
 
 const dislikeItem = (req, res) => {
   const { itemId } = req.params;
-   const userId = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
@@ -115,7 +147,7 @@ const dislikeItem = (req, res) => {
 
   ClothingItem.findByIdAndUpdate(
     itemId,
-    { $pull: { likes: userId } },
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .then((item) => res.status(200).send({ data: item }))

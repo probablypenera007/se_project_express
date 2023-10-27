@@ -21,12 +21,12 @@ const createUser = (req, res) => {
         });
     });
 };
-
+// [-] [GET] Get a user with an _id that does not exist in the database
 const getUsers = (req, res) => {
   Users.find({})
     .then((users) => res.status(200).send(users))
     .catch((e) => {
-      res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE, e });
+      res.status(ERRORS.NOT_FOUND.STATUS).send({ message:ERRORS.NOT_FOUND.DEFAULT_MESSAGE, e });
     });
 };
 
