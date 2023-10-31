@@ -49,19 +49,6 @@ const getMainUser = (req, res) => {
     });
 };
 
-// const deleteItem = (req, res) => {
-//   const { itemId } = req.params;
-
-//   console.log(itemId);
-//   ClothingItem.findByIdAndDelete(itemId).orFail().then(() => res.status(200).send({}))
-//   .catch((e) => {
-//     res.status(500).send({ message: 'DELETEEE ITEMS ERRRRROORRRR!', e });
-//   });
-// }
-
-
-
-
 module.exports = {
   createUser,
   getUsers,
