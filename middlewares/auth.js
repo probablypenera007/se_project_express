@@ -7,7 +7,7 @@ const ERRORS = require('../utils/errors');
 
 
 
-module.exports = (req, res, next) => {
+const auth = (req, res, next) => {
     const { authorization } = req.headers;
 
     if (!authorization || !authorization.startsWith('Bearer ')) {
@@ -31,6 +31,7 @@ module.exports = (req, res, next) => {
     return next();
 };
 
+module.exports = { auth }
 
 
 // // middleware/auth.js  -- Dealing With Tokens
