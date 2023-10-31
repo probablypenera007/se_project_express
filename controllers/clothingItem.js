@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 
 /* eslint-disable consistent-return */
 
@@ -45,6 +46,19 @@ console.log("I want to delete this ID:" , itemId);
 if (!mongoose.Types.ObjectId.isValid(itemId)) {
   return res.status(ERRORS.BAD_REQUEST.STATUS).send({message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE});
 }
+
+ClothingItem.findById(itemId)
+.then((item) => {
+  if (!item) {
+    const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+    error.statusCode = ERRORS.NOT_FOUND.STATUS;
+    throw error;
+  }
+  if (item.owner.toString() !== req.user._id.toString()) {
+    return res.status(ERRORS.PERMISSION.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
+  }
+})
+
   ClothingItem.findByIdAndDelete(itemId, {new: false})
     .orFail(() => {
       const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);

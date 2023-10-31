@@ -1,7 +1,10 @@
-/* eslint-disable no-console */
-// require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const {login, createUser} = require('./controllers/users');
+// const auth = require('./middlewares/auth');
+
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -17,16 +20,19 @@ console.log('CONNECTED TO DB!')}, e => console.log("DB NOT CONNECTED",e));
 
 
 
-const routes = require('./routes');
 
+app.use(cors());
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '653ab3c31c0c1371ce3ed33d'// paste the _id of the test user created in the previous step
-  };
-  next();
-});
+
+
+app.post('/signin', login);
+
+app.post('/signup', createUser);
+
+
+const routes = require('./routes');
+
 app.use(routes);
 
 

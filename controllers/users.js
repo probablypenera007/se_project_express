@@ -1,64 +1,96 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-console */
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 const ERRORS = require('../utils/errors');
+const { JWT_SECRET} = require('../utils/config')
+
 
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  bcrypt.hash(password, 10)
+ return bcrypt.hash(password, 10)
   .then(hash =>  Users.create({ name, avatar, email, password: hash }))
-  .then((user) => res.send({ data: user }))
+  .then((user) => {
+    const userObj = user.toObject();
+    delete userObj.password;
+    res.send({ data: userObj });
+  })
   .catch((err) => {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'ValidationError' || err.code === 11000) {
       return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
     }
-    res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
+    return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
   });
 };
 
+const getCurrentUsers = (req, res) => {
+  console.log('Getting current users...');
+  console.log('User ID from request:', req.user._id);
 
 
-
-// [-] [GET] Get a user with an _id that does not exist in the database
-const getUsers = (req, res) => {
-  Users.find({})
-    .then((users) => res.send({ data : users }))
-    .catch(() => {
-      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message:ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE});
-    });
+   Users.findById(req.user._id)
+  .then(user => {
+    if (!user) {
+      throw new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+    }
+    res.send({ data: user });
+  })
+  .catch(() => {
+    res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE })
+  })
 };
 
-const getMainUser = (req, res) => {
-  const {userId} = req.params;
+const updateUser = (req, res) => {
+  console.log('Updating user...');
+  console.log('User data from request:', req.body);
+  const { name, email, avatar } = req.body;
 
-  console.log(userId);
+ return Users.findByIdAndUpdate(req.user._id, {name, email, avatar}, {new:true})
+  .then(user => {
+    if (!user) {
+      throw new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+    }
+    res.send({ data: user });
+  })
+  .catch(err => {
+    if (err.name === 'ValidationError') {
+      return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
+    }
+   return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE});
+  });
+}
 
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
-  }
-  // ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
-   Users.findById(userId)
-     .orFail(() => {
-      const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
-      error.statusCode = ERRORS.NOT_FOUND.STATUS;
-      throw error;
-     })
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((e) => {
-      if (e.statusCode) {
-        return res.status(e.statusCode).send({ message: e.message });
+const login = (req, res) => {
+  const {email, password} = req.body;
+
+  return Users.findOne({ email }).select('+password')
+  .then(user => {
+    if(!user) {
+      throw new Error('Invalid email or password');
+    }
+
+    return bcrypt.compare(password, user.password)
+    .then(match => {
+      if(!match) {
+        throw new Error('Invalid email or passowrd')
       }
-      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message:ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d'});
+      res.send({ token });
     });
-};
+  })
+  .catch(err => {
+    if (err.message === 'Invalid email or password') {
+      return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: err.message });
+    }
+    return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
+  })
+}
+
 
 module.exports = {
   createUser,
-  getUsers,
-  getMainUser,
+  login,
+  getCurrentUsers,
+  updateUser
 };
