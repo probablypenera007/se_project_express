@@ -1,21 +1,29 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 const ERRORS = require('../utils/errors');
 
-const createUser = (req, res) => {
-  const { name, avatar } = req.body;
 
-  Users.create({ name, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
-      }
-      res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-    });
-  };
+const createUser = (req, res) => {
+  const { name, avatar, email, password } = req.body;
+
+  bcrypt.hash(password, 10)
+  .then(hash =>  Users.create({ name, avatar, email, password: hash }))
+  .then((user) => res.send({ data: user }))
+  .catch((err) => {
+    if (err.name === 'ValidationError') {
+      return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
+    }
+    res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
+  });
+};
+
+
+
+
 // [-] [GET] Get a user with an _id that does not exist in the database
 const getUsers = (req, res) => {
   Users.find({})
