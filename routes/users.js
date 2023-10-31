@@ -1,5 +1,5 @@
 const router = require('express').Router();
-// const {auth} = require('../middlewares/auth')
+ const {auth} = require('../middlewares/auth')
  const {
  getCurrentUsers,
  updateUser,
@@ -13,8 +13,8 @@ const router = require('express').Router();
 
 // Read
 // router.get('/', getUsers);
-// router.get('/users/me', auth, getCurrentUsers);
- router.get('/users/me', getCurrentUsers);
+router.get('/users/me', getCurrentUsers);
+//  router.get('/users/me', getCurrentUsers);
 // router.get('/users/me', (req, res, next) => {
 //   console.log("GET /users/me route triggered");
 //   getCurrentUsers(req,res,next);
@@ -28,8 +28,6 @@ const router = require('express').Router();
 // Update
 // router.patch('/users/me', auth, updateUser);
 // router.use(auth)
- router.patch('/users/me', updateUser);
-
-
+ router.patch('/users/me', auth, updateUser);
 
 module.exports = router;

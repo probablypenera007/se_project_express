@@ -81,7 +81,7 @@ const login = (req, res) => {
   })
   .catch(err => {
     if (err.message === 'Invalid email or password') {
-      return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: err.message });
+      return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
     }
     return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
   })
