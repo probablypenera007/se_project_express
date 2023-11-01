@@ -26,4 +26,3 @@ router.delete('/:itemId', auth,  deleteItem);
 router.delete('/:itemId/likes', auth, dislikeItem);
 
 module.exports = router;
-
