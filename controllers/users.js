@@ -1,13 +1,17 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-console */
 // const mongoose = require('mongoose');
  const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 const ERRORS = require('../utils/errors');
 const { JWT_SECRET} = require('../utils/config')
+// eslint-disable-next-line import/order
 const validator = require('validator');
 
 
 
+// eslint-disable-next-line consistent-return
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -39,6 +43,7 @@ const createUser = (req, res) => {
 };
 
 const getCurrentUsers = (req, res) => {
+  // eslint-disable-next-line no-console
   console.log('Getting current users...');
   console.log('User ID from request:', req.user._id);
   const userId = req.user._id;
