@@ -11,10 +11,14 @@ const validator = require('validator');
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
+}
+
   Users.findOne({ email })
   .then(user => {
       if (user) {
-          return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: "User with this email already exists." });
+          return res.status(ERRORS.CONFLICT.STATUS).send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE });
       }
       return bcrypt.hash(password, 10);
   })
