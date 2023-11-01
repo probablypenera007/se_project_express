@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/config');
 
-console.log("Loaded JWT_SECRET:", JWT_SECRET);
+// console.log("Loaded JWT_SECRET:", JWT_SECRET);
 const ERRORS = require('../utils/errors');
 
 
@@ -23,12 +23,11 @@ const auth = (req, res, next) => {
     } catch (err) {
         return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.UNAUTHORIZED.DEFAULT_MESSAGE });
     }
-
     req.user = payload;
 
     console.log("Decoded JWT Payload:", req.user);
 
-    return next();
+   next();
 };
 
 module.exports = { auth }

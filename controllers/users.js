@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const Users = require('../models/user');
 const ERRORS = require('../utils/errors');
 const { JWT_SECRET} = require('../utils/config')
+const validator = require('validator');
 
 
 
@@ -36,15 +37,23 @@ const createUser = (req, res) => {
 const getCurrentUsers = (req, res) => {
   console.log('Getting current users...');
   console.log('User ID from request:', req.user._id);
-  const {userId} = req.params;
+  const userId = req.user._id;
 
    Users.findById(userId)
+   .orFail()
    .then(user => res.send({ data: user }))
    .catch(err => {
+    console.error(err)
        if (err.name === 'ValidationError' || err.name === 'CastError') {
            return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
-       }
-       return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
+       }  if (err.name === 'DocumentNotFoundError') {
+        return res
+          .status(ERRORS.NOT_FOUND.STATUS)
+          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE});
+      }
+       return res
+       .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
+       .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
    });
 };
 
@@ -71,27 +80,43 @@ const updateUser = (req, res) => {
 const login = (req, res) => {
   const {email, password} = req.body;
 
-  return Users.findUserByCredentials({ email }).select('+password')
-  .then(user => {
-    if(!user) {
-      throw new Error('Invalid email or password');
-    }
+  if (!email || !password) {
+    return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
+}
 
-    return bcrypt.compare(password, user.password)
-    .then(match => {
-      if(!match) {
-        throw new Error('Invalid email or passowrd')
-      }
+if (!validator.isEmail(email)) {
+  return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email Format is Invalid." });
+}
+
+ Users.findUserByCredentials( email, password )
+  // .select('+password')
+  .then(user => {
+    // if(!user) {
+    //   throw new Error('Invalid email or password');
+    // }
+
+    // return bcrypt.compare(password, user.password)
+    // .then(match => {
+    //   if(!match) {
+    //     throw new Error('Invalid email or passowrd')
+    //   }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d'});
-      res.send({ token });
-    });
-  })
+      res.send({ token })
+//    });
+ })
   .catch(err => {
-    if (err.message === 'Invalid email or password') {
+    console.error(err);
+ //   return res.status(400).send({ message: "Testing 400 status" });
+    if (err.name === 'Invalid email or password' || err.name === 'ValidationError' ||  err.name === 'Error') {
       return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
     }
+    if (err.name === 'DocumentNotFoundError') {
+      return res.status(ERRORS.NOT_FOUND.STATUS)
+                .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+    }
+    // console.error("Unexpected error during login:", err);
     return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-  })
+  });
 }
 
 
