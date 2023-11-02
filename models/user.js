@@ -19,12 +19,12 @@ const userSchema = new mongoose.Schema({
     },
     email: {
       type: String,
-      required: true,
       unique: true,
+      required: true,
       validate: {
-        validator: validator.isEmail,
-        message: 'Email is invalid'
-      }
+        validator: (v) => validator.isEmail(v),
+        message: 'Email is invalid',
+      },
     },
     password: {
       type: String,
