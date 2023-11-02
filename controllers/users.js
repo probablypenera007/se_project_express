@@ -1,5 +1,4 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-console */
+
 // const mongoose = require('mongoose');
  const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -10,8 +9,6 @@ const { JWT_SECRET} = require('../utils/config')
 const validator = require('validator');
 
 
-
-// eslint-disable-next-line consistent-return
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -45,12 +42,15 @@ const createUser = (req, res) => {
 const getCurrentUsers = (req, res) => {
   // eslint-disable-next-line no-console
   console.log('Getting current users...');
-  console.log('User ID from request:', req.user._id);
+  console.log('User ID from request eto na yun!:', req.user._id);
   const userId = req.user._id;
 
    Users.findById(userId)
    .orFail()
-   .then(user => res.send({ data: user }))
+   .then(user => {
+    console.log("User data retrieved:", user)
+    res.send({ data: user })
+   })
    .catch(err => {
     console.error(err)
        if (err.name === 'ValidationError' || err.name === 'CastError') {

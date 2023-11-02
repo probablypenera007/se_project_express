@@ -13,12 +13,12 @@ const router = require('express').Router();
 
 // Read
 // router.get('/', getUsers);
-router.get('/users/me',auth, getCurrentUsers);
+// router.get('/users/me',auth, getCurrentUsers);
 //  router.get('/users/me', getCurrentUsers);
-// router.get('/users/me', (req, res, next) => {
-//   console.log("GET /users/me route triggered");
-//   getCurrentUsers(req,res,next);
-// });
+router.get('/users/me', (req, res, next) => {
+  console.log("GET /users/me route triggered");
+  next();
+ }, auth, getCurrentUsers);
 
 
 
