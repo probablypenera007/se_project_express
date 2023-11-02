@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable consistent-return */
-
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/config');
 
@@ -13,7 +10,7 @@ const auth = (req, res, next) => {
     const { authorization } = req.headers;
 
     if (!authorization || !authorization.startsWith('Bearer ')) {
-        return res.status(ERRORS.PERMISSION.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
+        return res.status(ERRORS.UNAUTHORIZEDN.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
     }
 
     const token = authorization.replace('Bearer ', '');
@@ -27,9 +24,9 @@ const auth = (req, res, next) => {
     }
     req.user = payload;
 
-    console.log("Decoded JWT Payload:", req.user);
+   // console.log("Decoded JWT Payload:", req.user);
 
-   next();
+  return next();
 };
 
 module.exports = { auth }

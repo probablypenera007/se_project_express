@@ -15,10 +15,7 @@ const router = require('express').Router();
 // router.get('/', getUsers);
 // router.get('/users/me',auth, getCurrentUsers);
 //  router.get('/users/me', getCurrentUsers);
-router.get('/users/me', (req, res, next) => {
-  console.log("GET /users/me route triggered");
-  next();
- }, auth, getCurrentUsers);
+router.get('/me', auth, getCurrentUsers);
 
 
 
@@ -28,6 +25,6 @@ router.get('/users/me', (req, res, next) => {
 // Update
 // router.patch('/users/me', auth, updateUser);
 // router.use(auth)
- router.patch('/users/me', auth, updateUser);
+ router.patch('/me', auth, updateUser);
 
 module.exports = router;
