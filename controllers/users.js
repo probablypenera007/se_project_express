@@ -12,26 +12,24 @@ const createUser = (req, res) => {
 
   if (!email || !password) {
     return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
-}
+  }
 
-return bcrypt.hash(password, 10)
-  .then(hash => Users.create({ name, avatar, email, password: hash }))
-  .then(newUser => res.send({
+ return bcrypt.hash(password, 10)
+    .then(hash => Users.create({ name, avatar, email, password: hash }))
+    .then(newUser => res.send({
           name: newUser.name,
           avatar: newUser.avatar,
           email: newUser.email
-      })
-  )
-  .catch(err => {
+      }))
+    .catch(err => {
+      // console.log(err);
       if (err.code === 11000) {
-          return res.status(ERRORS.CONFLICT.STATUS).send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE });
-      }
-      if (err.name === 'ValidationError') {
-        return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
+        return res.status(ERRORS.CONFLICT.STATUS).send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE });
       }
       return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-  });
+    });
 };
+
 
 const getCurrentUsers = (req, res) => {
 
