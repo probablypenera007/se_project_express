@@ -17,7 +17,7 @@ const {
 router.post('/', auth, createItem);
 
 // Read
-router.get('/',auth,  getItems);
+router.get('/',  getItems);
 
 // Update
 router.put('/:itemId/likes', auth, likeItem);

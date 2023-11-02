@@ -1,6 +1,7 @@
-/* eslint-disable no-console */
+
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const {login, createUser} = require('./controllers/users');
@@ -9,6 +10,7 @@ const {login, createUser} = require('./controllers/users');
 
 const { PORT = 3001 } = process.env;
 const app = express();
+app.use(helmet());
 
 // code reviewer note: will implement this after passing project,
 // had compatibility issue with mongoDB using mac OS sonoma had to troubleshoot.
