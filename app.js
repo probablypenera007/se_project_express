@@ -9,7 +9,8 @@ const { PORT = 3001 } = process.env;
 const app = express();
 app.use(helmet());
 
-mongoose.connect("mongodb://localhost:27017/wtwr_db");
+mongoose.connect("mongodb://localhost:27017/wtwr_db", () => {
+  console.log('CONNECTED TO DB!')}, e => console.log("DB NOT CONNECTED",e));
 
 app.use(cors());
 app.use(express.json());
