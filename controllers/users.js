@@ -11,7 +11,7 @@ const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
+    throw new Error(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
   }
 
   // return Users.findOne({ email })
@@ -32,10 +32,11 @@ const createUser = (req, res) => {
       // console.log(err);
       if (err.name === 'ValidationError') {
         return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
-      } 
+      }
       if (err.code === 11000) {
         return res.status(ERRORS.CONFLICT.STATUS).send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE });
       }
+
       return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
     })
  // })
