@@ -21,7 +21,6 @@ const createUser = (req, res) => {
       .send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE })
     }
 
-
  return bcrypt.hash(password, 10)
     .then(hash => Users.create({ name, avatar, email, password: hash }))
     .then(newUser => res.send({
@@ -37,9 +36,7 @@ const createUser = (req, res) => {
       return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
     });
   })
-  .catch(err=> {
-return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE })
-  })
+  .catch(() => res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE }));
 };
 
 
