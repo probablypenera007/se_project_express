@@ -10,7 +10,7 @@ const auth = (req, res, next) => {
     const { authorization } = req.headers;
 
     if (!authorization || !authorization.startsWith('Bearer ')) {
-        return res.status(ERRORS.UNAUTHORIZEDN.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
+        return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
     }
 
     const token = authorization.replace('Bearer ', '');
