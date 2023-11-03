@@ -14,12 +14,12 @@ const createUser = (req, res) => {
     return res.send(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
   }
 
-  // return Users.findOne({ email })
-  // .then((user) => {
-  //   if(user) {
-  //     return res.status(ERRORS.CONFLICT.STATUS)
-  //     .send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE })
-  //   }
+  return Users.findOne({ email })
+  .then((user) => {
+    if(user) {
+      return res.status(ERRORS.CONFLICT.STATUS)
+      .send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE })
+    }
 
  return bcrypt.hash(password, 10)
     .then(hash => Users.create({ name, avatar, email, password: hash }))
@@ -39,7 +39,7 @@ const createUser = (req, res) => {
 
       return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
     })
- // })
+  })
 }
   // .catch(() => res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE }));
 // }
