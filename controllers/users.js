@@ -17,11 +17,12 @@ const createUser = (req, res) => {
   return Users.findOne({ email })
   .then((user) => {
     if(user) {
-      return res.status(ERRORS.CONFLICT.STATUS)
-      .send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE })
+      throw new Error('User already exists')
+      // return res.status(ERRORS.CONFLICT.STATUS)
+      // .send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE })
     }
-
  return bcrypt.hash(password, 10)
+  })
     .then(hash => Users.create({ name, avatar, email, password: hash }))
     .then(newUser => res.send({
           name: newUser.name,
@@ -33,13 +34,13 @@ const createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: err.message });
       }
-      if (err.code === 11000) {
+      if (err.message === 'User already exists') {
         return res.status(ERRORS.CONFLICT.STATUS).send({ message: ERRORS.CONFLICT.DEFAULT_MESSAGE });
       }
 
       return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
     })
-  })
+// })
 }
   // .catch(() => res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE }));
 // }
