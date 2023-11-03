@@ -105,32 +105,14 @@ if (!validator.isEmail(email)) {
 }
 
  return Users.findUserByCredentials( email, password )
-  // .select('+password')
   .then(user => {
-    // if(!user) {
-    //   throw new Error('Invalid email or password');
-    // }
-
-    // return bcrypt.compare(password, user.password)
-    // .then(match => {
-    //   if(!match) {
-    //     throw new Error('Invalid email or passowrd')
-    //   }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d'});
       res.send({ token })
-//    });
  })
   .catch(err => {
-    // console.error(err);
- //   return res.status(400).send({ message: "Testing 400 status" });
     if (err.name === 'Invalid email or password') {
       return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message:ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
     }
-    // if (err.name === 'DocumentNotFoundError') {
-    //   return res.status(ERRORS.NOT_FOUND.STATUS)
-    //             .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
-    // }
-    // console.error("Unexpected error during login:", err);
     return res.status(ERRORS.INTERNAL_SERVER_ERROR.STATUS).send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
   });
 }
