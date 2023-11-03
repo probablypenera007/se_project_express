@@ -1,36 +1,26 @@
 module.exports = {
   BAD_REQUEST: {
     STATUS: 400,
-    DEFAULT_MESSAGE: 'INVALID REQUEST DATA',
+    DEFAULT_MESSAGE: "INVALID REQUEST DATA",
   },
   UNAUTHORIZED: {
     STATUS: 401,
-    DEFAULT_MESSAGE: 'AUTHORIZATION REQUIRED',
+    DEFAULT_MESSAGE: "AUTHORIZATION REQUIRED",
   },
   PERMISSION: {
     STATUS: 403,
-    DEFAULT_MESSAGE: 'NO PERMISSION TO EXECUTE ACTION'
+    DEFAULT_MESSAGE: "NO PERMISSION TO EXECUTE ACTION",
   },
-  NOT_FOUND:  {
+  NOT_FOUND: {
     STATUS: 404,
-    DEFAULT_MESSAGE: 'REQUESTED RESOURCE NOT FOUND',
+    DEFAULT_MESSAGE: "REQUESTED RESOURCE NOT FOUND",
   },
   CONFLICT: {
     STATUS: 409,
-    DEFAULT_MESSAGE: 'USER ALREADY EXISTS',
+    DEFAULT_MESSAGE: "USER ALREADY EXISTS",
   },
   INTERNAL_SERVER_ERROR: {
     STATUS: 500,
-    DEFAULT_MESSAGE: 'AN ERROR HAS OCCURED ON THE SERVER',
-  }
+    DEFAULT_MESSAGE: "AN ERROR HAS OCCURED ON THE SERVER",
+  },
 };
-
-
-// res.status(BAD_REQUEST).send({
-//   message:"Requested resource not found",
-// })
-
-
-// 400 — invalid data passed to the methods for creating an item/user or updating an item, or invalid ID passed to the params.
-// 404 — there is no user or clothing item with the requested id, or the request was sent to a non-existent address.
-// 500 — default error. Accompanied by the message: "An error has occurred on the server."

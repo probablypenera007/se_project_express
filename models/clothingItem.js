@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+const mongoose = require("mongoose");
+const validator = require("validator");
 
 const clothingItem = new mongoose.Schema({
   name: {
@@ -11,29 +11,31 @@ const clothingItem = new mongoose.Schema({
   weather: {
     type: String,
     required: true,
-    enum: ['hot', 'warm', 'cold'],
+    enum: ["hot", "warm", "cold"],
   },
   imageUrl: {
     type: String,
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
-      message: 'Link user input is invalid',
+      message: "Link user input is invalid",
     },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    ref: "user",
     required: true,
   },
-  likes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref:'user'
-  }],
+  likes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-module.exports = mongoose.model('clothingItems', clothingItem);
+module.exports = mongoose.model("clothingItems", clothingItem);
