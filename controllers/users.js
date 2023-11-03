@@ -11,7 +11,7 @@ const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    return res.send(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
+    return res.status(ERRORS.BAD_REQUEST.STATUS).send({ message: "Email and password are required." });
   }
 
   return Users.findOne({ email })
