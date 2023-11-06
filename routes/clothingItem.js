@@ -10,12 +10,12 @@ const {
 } = require("../controllers/clothingItem");
 
 // CRUD
-
+// Read
+router.get("/", getItems);
 // Create
 router.post("/", auth, createItem);
 
-// Read
-router.get("/", getItems);
+
 
 // Update
 router.put("/:itemId/likes", auth, likeItem);
