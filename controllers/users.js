@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const validator = require("validator");
+// const validator = require("validator");
 const Users = require("../models/user");
 const ERRORS = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
@@ -103,17 +103,17 @@ const updateUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res
-      .status(ERRORS.BAD_REQUEST.STATUS)
-      .send({ message: "Email and password are required." });
-  }
+  // if (!email || !password) {
+  //   return res
+  //     .status(ERRORS.BAD_REQUEST.STATUS)
+  //     .send({ message: "Email and password are required." });
+  // }
 
-  if (!validator.isEmail(email)) {
-    return res
-      .status(ERRORS.BAD_REQUEST.STATUS)
-      .send({ message: "Email Format is Invalid." });
-  }
+  // if (!validator.isEmail(email)) {
+  //   return res
+  //     .status(ERRORS.BAD_REQUEST.STATUS)
+  //     .send({ message: "Email Format is Invalid." });
+  // }
   return Users.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -121,17 +121,16 @@ const login = (req, res) => {
       });
       res.send({ token });
     })
-    .catch((err) => {
-      if (err.name === "Incorrect email or password") {
-        return res
+    .catch(() => {
+        res
           .status(ERRORS.UNAUTHORIZED.STATUS)
-          .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
-      }
-      return res
-        .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-        .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-    });
-};
+          .send({ message: "Incorrect email or password" });
+    //   return res
+    //     .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
+    //     .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
+     });
+
+  };
 
 module.exports = {
   createUser,
