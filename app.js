@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { login, createUser } = require("./controllers/users");
+const errorHandler = require("./middlewares/error-handler");
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -26,5 +27,7 @@ app.post("/signup", createUser);
 const routes = require("./routes");
 
 app.use(routes);
+
+app.use(errorHandler);
 
 app.listen(PORT);
