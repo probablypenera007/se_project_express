@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 const ERRORS = require("../utils/errors");
-const BadRequestError = require("../errors/bad-request-err")
-const NotFoundError = require('../errors/not-found-error');
-const ForbiddenError = require('../errors/forbidden-error');
+const BadRequestError = require("../errors/bad-request-err");
+const NotFoundError = require("../errors/not-found-err");
+const ForbiddenError = require("../errors/forbidden-err");
 
 
 const createItem = (req, res, next) => {
@@ -38,7 +38,7 @@ const deleteItem = (req, res, next) => {
     throw new BadRequestError("Invalid Item ID")
   }
 
-  return ClothingItem.findById(itemId)
+  ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
         throw new NotFoundError("Item Does Not Exist!");
@@ -51,7 +51,7 @@ const deleteItem = (req, res, next) => {
     .then(() => {
       res.send({ data: itemId });
     })
-    .catch(next)
+    .catch(next);
 };
 
 const likeItem = (req, res) => {

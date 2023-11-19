@@ -1,27 +1,31 @@
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../utils/config');
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../utils/config");
+const UnauthorizedError = require("../errors/unauthorized-err");
 
-const ERRORS = require('../utils/errors');
+// const ERRORS = require('../utils/errors');
 
 const auth = (req, res, next) => {
-    const { authorization } = req.headers;
+  const { authorization } = req.headers;
 
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-        return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
-    }
+  if (!authorization || !authorization.startsWith("Bearer ")) {
+    // return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
+    throw new UnauthorizedError("Authorization required");
+  }
 
-    const token = authorization.replace('Bearer ', '');
+  const token = authorization.replace("Bearer ", "");
 
-    let payload;
+  let payload;
 
-    try {
-        payload = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-        return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.UNAUTHORIZED.DEFAULT_MESSAGE });
-    }
-    req.user = payload;
+  try {
+    payload = jwt.verify(token, JWT_SECRET);
+  } catch (e) {
+    // return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.UNAUTHORIZED.DEFAULT_MESSAGE });
+    const err = new Error("Authorization required");
+    err.statusCode = 401;
+  }
+  req.user = payload;
 
   return next();
 };
 
-module.exports = { auth }
+module.exports = { auth };
