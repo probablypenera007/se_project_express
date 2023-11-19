@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
-const ERRORS = require("../utils/errors");
+// const ERRORS = require("../utils/errors");
 const BadRequestError = require("../errors/bad-request-err");
 const NotFoundError = require("../errors/not-found-err");
 const ForbiddenError = require("../errors/forbidden-err");
@@ -54,43 +54,52 @@ const deleteItem = (req, res, next) => {
     .catch(next);
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res
-      .status(ERRORS.BAD_REQUEST.STATUS)
-      .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
+    // return res
+    //   .status(ERRORS.BAD_REQUEST.STATUS)
+    //   .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
+    return next(new BadRequestError("Invalid Item ID for Liking an Item"))
   }
 
   return ClothingItem.findByIdAndUpdate(
     itemId,
     { $addToSet: { likes: req.user._id } },
-    { new: true },
+    { new: true }
   )
-    .orFail(() => {
-      const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
-      error.statusCode = ERRORS.NOT_FOUND.STATUS;
-      throw error;
-    })
+    .orFail(() => new NotFoundError("Item NOT FOUND for Liking an Item"))
     .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      if (err.statusCode) {
-        return res.status(err.statusCode).send({ message: err.message });
-      }
-      return res
-        .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-        .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-    });
+    .catch(next);
+  //   itemId,
+  //   { $addToSet: { likes: req.user._id } },
+  //   { new: true },
+  // )
+  //   .orFail(() => {
+  //     const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+  //     error.statusCode = ERRORS.NOT_FOUND.STATUS;
+  //     throw error;
+  //   })
+  //   .then((item) => res.send({ data: item }))
+  //   .catch((err) => {
+  //     if (err.statusCode) {
+  //       return res.status(err.statusCode).send({ message: err.message });
+  //     }
+  //     return res
+  //       .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
+  //       .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
+  //   });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res
-      .status(ERRORS.BAD_REQUEST.STATUS)
-      .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
+    return next(new BadRequestError("Invalid Item ID for Disliking an Item"))
+    // return res
+    //   .status(ERRORS.BAD_REQUEST.STATUS)
+    //   .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
   }
 
   return ClothingItem.findByIdAndUpdate(
@@ -98,19 +107,22 @@ const dislikeItem = (req, res) => {
     { $pull: { likes: mongoose.Types.ObjectId(req.user._id) } },
     { new: true },
   )
-    .orFail(new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE))
-    .then((item) => res.send({ data: item }))
-    .catch((e) => {
-      if (e.message === ERRORS.NOT_FOUND.DEFAULT_MESSAGE) {
-        return res.status(ERRORS.NOT_FOUND.STATUS).send({ message: e.message });
-      }
-      if (e.statusCode) {
-        return res.status(e.statusCode).send({ message: e.message });
-      }
-      return res
-        .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-        .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
-    });
+  .orFail(() => new NotFoundError("Item NOT FOUND for Disliking an Item"))
+  .then((item) => res.send({ data: item }))
+  .catch(next);
+    // .orFail(new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE))
+    // .then((item) => res.send({ data: item }))
+    // .catch((e) => {
+    //   if (e.message === ERRORS.NOT_FOUND.DEFAULT_MESSAGE) {
+    //     return res.status(ERRORS.NOT_FOUND.STATUS).send({ message: e.message });
+    //   }
+    //   if (e.statusCode) {
+    //     return res.status(e.statusCode).send({ message: e.message });
+    //   }
+    //   return res
+    //     .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
+    //     .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
+    // });
 };
 
 module.exports = {
