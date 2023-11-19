@@ -9,7 +9,7 @@ const auth = (req, res, next) => {
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     // return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
-    throw new UnauthorizedError("Authorization required");
+    throw new UnauthorizedError("Authorization required auth.js");
   }
 
   const token = authorization.replace("Bearer ", "");
@@ -20,7 +20,7 @@ const auth = (req, res, next) => {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (e) {
     // return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.UNAUTHORIZED.DEFAULT_MESSAGE });
-    const err = new Error("Authorization required");
+    const err = new Error("Unauthorized Token");
     err.statusCode = 401;
   }
   req.user = payload;

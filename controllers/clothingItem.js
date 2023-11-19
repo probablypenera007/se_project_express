@@ -35,16 +35,16 @@ const deleteItem = (req, res, next) => {
    // return res
     //  .status(ERRORS.BAD_REQUEST.STATUS)
     //  .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
-    throw new BadRequestError("Invalid Item ID")
+    return next(new BadRequestError("Invalid Item ID"))
   }
 
-  ClothingItem.findById(itemId)
+  return ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
-        throw new NotFoundError("Item Does Not Exist!");
+        next(new NotFoundError("Item Does Not Exist!"));
       }
       if (item.owner.toString() !== req.user._id.toString()) {
-        throw new ForbiddenError("You Do Not Have The Permission To Delete This Item! tsk. tsk.");
+        next(new ForbiddenError("You Do Not Have The Permission To Delete This Item! tsk. tsk."));
       }
       return ClothingItem.findByIdAndDelete(itemId);
     })
