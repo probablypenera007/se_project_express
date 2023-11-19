@@ -1,8 +1,12 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 const ERRORS = require("../utils/errors");
+const BadRequestError = require("../errors/bad-request-err")
+const NotFoundError = require('../errors/not-found-error');
+const ForbiddenError = require('../errors/forbidden-error');
 
-const createItem = (req, res) => {
+
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl, likes } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id, likes })
@@ -11,66 +15,43 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(ERRORS.BAD_REQUEST.STATUS).send({
-          message: err.message,
-        });
+        next(new BadRequestError("Invalid Item Format. Check Image URL Provided"))
+      } else {
+        next(err)
       }
-      return res
-        .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-        .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
     });
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send({ data: items }))
-    .catch(() => {
-      res
-        .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-        .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-    });
+    .catch(next)
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res
-      .status(ERRORS.BAD_REQUEST.STATUS)
-      .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
+   // return res
+    //  .status(ERRORS.BAD_REQUEST.STATUS)
+    //  .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
+    throw new BadRequestError("Invalid Item ID")
   }
 
   return ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
-        throw new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+        throw new NotFoundError("Item Does Not Exist!");
       }
       if (item.owner.toString() !== req.user._id.toString()) {
-        throw new Error(ERRORS.PERMISSION.DEFAULT_MESSAGE);
+        throw new ForbiddenError("You Do Not Have The Permission To Delete This Item! tsk. tsk.");
       }
       return ClothingItem.findByIdAndDelete(itemId);
     })
     .then(() => {
       res.send({ data: itemId });
     })
-    .catch((err) => {
-      if (err.message === ERRORS.NOT_FOUND.DEFAULT_MESSAGE) {
-        return res
-          .status(ERRORS.NOT_FOUND.STATUS)
-          .send({ message: err.message });
-      }
-      if (err.message === ERRORS.PERMISSION.DEFAULT_MESSAGE) {
-        return res
-          .status(ERRORS.PERMISSION.STATUS)
-          .send({ message: err.message });
-      }
-      if (err.statusCode) {
-        return res.status(err.statusCode).send({ message: err.message });
-      }
-      return res
-        .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-        .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-    });
+    .catch(next)
 };
 
 const likeItem = (req, res) => {
