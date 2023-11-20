@@ -4,7 +4,8 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
-const { validateUserBody, validateLogIn } = require("./middlewares/validation")
+const { validateUserBody, validateLogIn } = require("./middlewares/validation");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const { login, createUser } = require("./controllers/users");
 const errorHandler = require("./middlewares/error-handler");
 
@@ -29,7 +30,13 @@ app.post("/signup", validateUserBody,createUser);
 
 const routes = require("./routes");
 
+// app.use(routes);
+
+app.use(requestLogger);
+
 app.use(routes);
+
+app.use(errorLogger); // enabling the error logger
 
 app.use(errors());
 
