@@ -46,7 +46,7 @@ module.exports.validateUserBody = celebrate({
   }),
 });
 
-module.exports.validateLogin = celebrate({
+module.exports.validateLogIn = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email().messages({
       'string.empty': 'The "email" field must be filled in',
@@ -64,6 +64,11 @@ module.exports.validateId = celebrate({
       "string.length": 'The "itemId" must be exactly 24 characters long',
       "string.hex": 'The "itemId" must be a valid hexadecimal value',
       "string.empty": 'The "itemId" field must be filled in',
+    }),
+    userId: Joi.string().hex().length(24).messages({
+      "string.length": 'The "userId" must be exactly 24 characters long',
+      "string.hex": 'The "userId" must be a valid hexadecimal value',
+      "string.empty": 'The "userId" field must be filled in',
     }),
   }),
 });

@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
+const { validateUserBody, validateLogIn } = require("./middlewares/validation")
 const { login, createUser } = require("./controllers/users");
 const errorHandler = require("./middlewares/error-handler");
 
@@ -22,9 +23,9 @@ mongoose.connect(
 app.use(cors());
 app.use(express.json());
 
-app.post("/signin", login);
+app.post("/signin", validateLogIn,login);
 
-app.post("/signup", createUser);
+app.post("/signup", validateUserBody,createUser);
 
 const routes = require("./routes");
 
