@@ -36,7 +36,7 @@ const deleteItem = (req, res, next) => {
     return next(new BadRequestError("Invalid Item ID"));
   }
 
-  ClothingItem.findById(itemId)
+  return ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
         return next(new NotFoundError("Item Does Not Exist!"));
@@ -50,9 +50,7 @@ const deleteItem = (req, res, next) => {
       }
       return ClothingItem.findByIdAndDelete(itemId);
     })
-    .then(() => {
-      res.send({ data: itemId });
-    })
+    .then(() => res.send({ data: itemId }))
     .catch(next);
 };
 
@@ -63,7 +61,7 @@ const likeItem = (req, res, next) => {
     return next(new BadRequestError("Invalid Item ID for Liking an Item"));
   }
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
@@ -80,7 +78,7 @@ const dislikeItem = (req, res, next) => {
     return next(new BadRequestError("Invalid Item ID for Disliking an Item"));
   }
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: mongoose.Types.ObjectId(req.user._id) } },
     { new: true },

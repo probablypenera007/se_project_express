@@ -9,7 +9,7 @@ router.use("/items", clothingItem);
 router.use("/users", user);
 
 
-console.log("what is NotFoundError in routes/index.js: ", NotFoundError)
+// console.log("what is NotFoundError in routes/index.js: ", NotFoundError)
 router.use((req, res, next) => {
  next(new NotFoundError("Request is NOWHERE TO BE FOUND"))
 });
