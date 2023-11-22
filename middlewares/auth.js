@@ -1,6 +1,11 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const UnauthorizedError = require("../errors/unauthorized-err");
+
+// if (process.env.NODE_ENV === 'development') {
+//   console.log("JWT_SECRET (for debugging):", JWT_SECRET);
+// }
 
 // const ERRORS = require('../utils/errors');
 
@@ -20,8 +25,9 @@ const auth = (req, res, next) => {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (e) {
     // return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.UNAUTHORIZED.DEFAULT_MESSAGE });
-    const err = new Error("Unauthorized Token");
-    err.statusCode = 401;
+    // const err = new Error("Unauthorized Token");
+    // err.statusCode = 401;
+    return next(new UnauthorizedError("Unauthorized Token in auth.js"));
   }
   req.user = payload;
 

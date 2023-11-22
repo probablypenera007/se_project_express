@@ -5,7 +5,6 @@ const BadRequestError = require("../errors/bad-request-err");
 const NotFoundError = require("../errors/not-found-err");
 const ForbiddenError = require("../errors/forbidden-err");
 
-
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl, likes } = req.body;
 
@@ -15,9 +14,11 @@ const createItem = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        next(new BadRequestError("Invalid Item Format. Check Image URL Provided"))
+        next(
+          new BadRequestError("Invalid Item Format. Check Image URL Provided"),
+        );
       } else {
-        next(err)
+        next(err);
       }
     });
 };
@@ -25,26 +26,27 @@ const createItem = (req, res, next) => {
 const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send({ data: items }))
-    .catch(next)
+    .catch(next);
 };
 
 const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-   // return res
-    //  .status(ERRORS.BAD_REQUEST.STATUS)
-    //  .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
-    return next(new BadRequestError("Invalid Item ID"))
+    return next(new BadRequestError("Invalid Item ID"));
   }
 
-  return ClothingItem.findById(itemId)
+  ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
-        next(new NotFoundError("Item Does Not Exist!"));
+        return next(new NotFoundError("Item Does Not Exist!"));
       }
       if (item.owner.toString() !== req.user._id.toString()) {
-        next(new ForbiddenError("You Do Not Have The Permission To Delete This Item! tsk. tsk."));
+        return next(
+          new ForbiddenError(
+            "You Do Not Have The Permission To Delete This Item! tsk. tsk.",
+          ),
+        );
       }
       return ClothingItem.findByIdAndDelete(itemId);
     })
@@ -58,71 +60,34 @@ const likeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    // return res
-    //   .status(ERRORS.BAD_REQUEST.STATUS)
-    //   .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
-    return next(new BadRequestError("Invalid Item ID for Liking an Item"))
+    return next(new BadRequestError("Invalid Item ID for Liking an Item"));
   }
 
-  return ClothingItem.findByIdAndUpdate(
+  ClothingItem.findByIdAndUpdate(
     itemId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .orFail(() => new NotFoundError("Item NOT FOUND for Liking an Item"))
     .then((item) => res.send({ data: item }))
     .catch(next);
-  //   itemId,
-  //   { $addToSet: { likes: req.user._id } },
-  //   { new: true },
-  // )
-  //   .orFail(() => {
-  //     const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
-  //     error.statusCode = ERRORS.NOT_FOUND.STATUS;
-  //     throw error;
-  //   })
-  //   .then((item) => res.send({ data: item }))
-  //   .catch((err) => {
-  //     if (err.statusCode) {
-  //       return res.status(err.statusCode).send({ message: err.message });
-  //     }
-  //     return res
-  //       .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-  //       .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE });
-  //   });
 };
 
 const dislikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return next(new BadRequestError("Invalid Item ID for Disliking an Item"))
-    // return res
-    //   .status(ERRORS.BAD_REQUEST.STATUS)
-    //   .send({ message: ERRORS.BAD_REQUEST.DEFAULT_MESSAGE });
+    return next(new BadRequestError("Invalid Item ID for Disliking an Item"));
   }
 
-  return ClothingItem.findByIdAndUpdate(
+  ClothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: mongoose.Types.ObjectId(req.user._id) } },
     { new: true },
   )
-  .orFail(() => new NotFoundError("Item NOT FOUND for Disliking an Item"))
-  .then((item) => res.send({ data: item }))
-  .catch(next);
-    // .orFail(new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE))
-    // .then((item) => res.send({ data: item }))
-    // .catch((e) => {
-    //   if (e.message === ERRORS.NOT_FOUND.DEFAULT_MESSAGE) {
-    //     return res.status(ERRORS.NOT_FOUND.STATUS).send({ message: e.message });
-    //   }
-    //   if (e.statusCode) {
-    //     return res.status(e.statusCode).send({ message: e.message });
-    //   }
-    //   return res
-    //     .status(ERRORS.INTERNAL_SERVER_ERROR.STATUS)
-    //     .send({ message: ERRORS.INTERNAL_SERVER_ERROR.DEFAULT_MESSAGE, e });
-    // });
+    .orFail(() => new NotFoundError("Item NOT FOUND for Disliking an Item"))
+    .then((item) => res.send({ data: item }))
+    .catch(next);
 };
 
 module.exports = {
