@@ -14,6 +14,14 @@ const { PORT = 3001 } = process.env;
 const app = express();
 app.use(helmet());
 
+const corsOptions = {
+  origin: 'https://www.isitrainingoutside.jumpingcrab.com',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204
+};
+app.use(cors(corsOptions));
+
 mongoose.connect(
   "mongodb://127.0.0.1:27017/wtwr_db",
   () => {
@@ -22,7 +30,7 @@ mongoose.connect(
   (e) => console.log("DB ERROR", e),
 );
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 
 app.post("/signin", validateLogIn,login);
