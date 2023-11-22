@@ -4,7 +4,7 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
-const { auth } = require("./middlewares/auth")
+// const { auth } = require("./middlewares/auth")
 const { validateUserBody, validateLogIn } = require("./middlewares/validation");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const { login, createUser } = require("./controllers/users");
@@ -15,7 +15,7 @@ const app = express();
 app.use(helmet());
 
 mongoose.connect(
-  "mongodb://34.139.90.69:3001/wtwr_db",
+  "mongodb://127.0.0.1:27017/wtwr_db",
   () => {
     console.log("DB is connected");
   },
