@@ -16,16 +16,16 @@ const createUser = (req, res, next) => {
     // return res
     //   .status(ERRORS.BAD_REQUEST.STATUS)
     //   .send({ message: "Email and password are required." });
-    throw new BadRequestError("Email and Password are REQUIRED!");
+    next(new BadRequestError("Email and Password are REQUIRED!"));
   }
 
   // return Users.findOne({ email })
   Users.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new ConflictError("User already exists");
+        return next(new ConflictError("User already exists"));
       }
-      return bcrypt.hash(password, 10);
+      return bcrypt.hash(password, 10)
     })
     .then((hash) => Users.create({ name, avatar, email, password: hash }))
     .then((newUser) =>
