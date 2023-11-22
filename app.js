@@ -25,6 +25,12 @@ mongoose.connect(
 app.use(cors());
 app.use(express.json());
 
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Server will crash now');
+  }, 0);
+});
+
 app.post("/signin", validateLogIn,login);
 
 app.post("/signup", validateUserBody,createUser);
