@@ -3,14 +3,10 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const UnauthorizedError = require("../errors/unauthorized-err");
 
-// if (process.env.NODE_ENV === 'development') {
-//   console.log("JWT_SECRET (for debugging):", JWT_SECRET);
-// }
-
-// const ERRORS = require('../utils/errors');
-
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
+
+
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     // return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.PERMISSION.DEFAULT_MESSAGE });
@@ -19,11 +15,19 @@ const auth = (req, res, next) => {
 
   const token = authorization.replace("Bearer ", "");
 
+  console.log('Authorization header:', req.headers.authorization);
+
+
   let payload;
 
   try {
     payload = jwt.verify(token, JWT_SECRET);
-  } catch (e) {
+    // const decoded = jwt.verify(token, JWT_SECRET);
+    // console.log('Token is valid. Decoded payload:', decoded)
+  }
+  catch (e) {
+    // catch (error) {
+    //   console.error('Token is invalid:', error.message);
     // return res.status(ERRORS.UNAUTHORIZED.STATUS).send({ message: ERRORS.UNAUTHORIZED.DEFAULT_MESSAGE });
     // const err = new Error("Unauthorized Token");
     // err.statusCode = 401;
@@ -33,5 +37,6 @@ const auth = (req, res, next) => {
 
   return next();
 };
+
 
 module.exports = { auth };

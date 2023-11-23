@@ -76,9 +76,9 @@ const updateUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  Users.findUserByCredentials(email, password)
+  return Users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === "production" ? JWT_SECRET : "dev-secret", {
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === "production" ? JWT_SECRET: JWT_SECRET, {
         expiresIn: "7d",
       });
       res.send({ token });
