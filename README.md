@@ -1,8 +1,8 @@
-# DOMAIN Link:
-https://www.isitrainingoutside.jumpingcrab.com 
-
 # WTWR (What to Wear?): Back End
-The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
+Welcome to the back-end of the WTWR application, a robust server designed to support our innovative "What to Wear?" service. This project gives you an inside look at advanced server setup, database management, security implementation and applicaiton deployment.
+
+# DOMAIN Link:
+Access live application here: [WTWR Application](https://www.isitrainingoutside.jumpingcrab.com)
 
 ## Functionality
 1. **API Endpoints:** Various CRUD (Create, Read. Update, Delete) operations for interacting with clothing items and user data.
@@ -18,10 +18,15 @@ The back-end project is focused on creating a server for the WTWR application. Y
 
 3. **Postman:** A tool used for testing API endpoints to ensure they behave as expected.
 
-4. **Security and Authorization:**
+4. **GCP (Google Cloud Platform):** For powerful and scalable cloud hosting.
+
+5. **Security and Authorization:**
   - **JWT (JSON Web Tokens):** Implementing JWT for secure user authentication and to maintain session integrity.
   - **Helmet:**  Utilizing Helmet to set various HTTP headers for app protection.
   - **CORS (Cross-Origin Resource Sharing):** Enabling CORS to allow for secure and controlled access to the server resources from different domains.
+  - **Joi & Celebrate:** Additional layers of data validation.
+
+6. **Winston Logging:** Efficient error tracking and application monitoring.
 
 
 ## Running the Project
@@ -29,14 +34,4 @@ The back-end project is focused on creating a server for the WTWR application. Y
 
 `npm run dev` — to launch the server with the hot reload feature
 
-## Updates and Security Enhancements
-The latest update to the WTWR backend includes;
-
-- Integration of JWT for secure and scalable user authorization.
-- The addition of Helmet to fortify the app against a range of common security vulnerabilities.
-- Implementation of CORS to manage cross-origin requests, ensuring that only authorized domains can interact with the API.
-
-These enhancements not only make the server more secure but also align with industry best practices for web application development.
-
-### Testing
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+Seamless functionality and fortified security of our latest back-end update!
