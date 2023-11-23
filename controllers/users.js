@@ -1,9 +1,7 @@
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const validator = require("validator");
 const Users = require("../models/user");
-// const ERRORS = require("../utils/errors");
 const { NODE_ENV, JWT_SECRET } = require("../utils/config");
 const BadRequestError = require("../errors/bad-request-err");
 const ConflictError = require("../errors/conflict-err");
@@ -22,7 +20,7 @@ const createUser = (req, res, next) => {
       if (user) {
         return next(new ConflictError("User already exists"));
       }
-      return bcrypt.hash(password, 10)
+      return bcrypt.hash(password, 10);
     })
     .then((hash) => Users.create({ name, avatar, email, password: hash }))
     .then((newUser) =>
@@ -78,9 +76,13 @@ const login = (req, res, next) => {
 
   return Users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === "production" ? JWT_SECRET: JWT_SECRET, {
-        expiresIn: "7d",
-      });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === "production" ? JWT_SECRET : JWT_SECRET,
+        {
+          expiresIn: "7d",
+        },
+      );
       res.send({ token });
     })
     .catch(() => next(new UnauthorizedError("Incorrect email or password")));

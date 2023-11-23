@@ -4,7 +4,6 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
-// const { auth } = require("./middlewares/auth")
 const { validateUserBody, validateLogIn } = require("./middlewares/validation");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const { login, createUser } = require("./controllers/users");
@@ -27,21 +26,11 @@ app.use(express.json());
 
 app.use(requestLogger);
 
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Server will crash now');
-  }, 0);
-});
-
 app.post("/signin", validateLogIn,login);
 
 app.post("/signup", validateUserBody,createUser);
 
 const routes = require("./routes");
-
-// app.use(routes);
-
-
 
 app.use(routes);
 

@@ -7,7 +7,6 @@ const { getCurrentUsers, updateUser } = require("../controllers/users");
 // Read
 router.get("/me",
 auth,
-// validateId,
   getCurrentUsers);
 
 // Update

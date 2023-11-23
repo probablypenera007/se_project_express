@@ -65,11 +65,6 @@ module.exports.validateId = celebrate({
       "string.hex": 'The "itemId" must be a valid hexadecimal value',
       "string.empty": 'The "itemId" field must be filled in',
     }),
-    // userId: Joi.string().hex().length(24).messages({
-    //   "string.length": 'The "userId" must be exactly 24 characters long',
-    //   "string.hex": 'The "userId" must be a valid hexadecimal value',
-    //   "string.empty": 'The "userId" field must be filled in',
-    // }),
   }),
 });
 
@@ -86,30 +81,3 @@ module.exports.validateUserUpdate = celebrate({
     }),
   }),
 });
-
-// NOTE TO SELF BEFORE I FORGET:
-// ERROR 400 FOR UPDATE USER,
-//  ITEM ID IS FOR SURE GETING VALIDATED AS I CAN LIKE,DISLIKE AND DELTE ITEM.
-// CODE REQUIREMENT, SPECIFIED "USE PARAMETERS TO EXTRACT AND VALDIATE ITEM AND USER ID"
-// https://www.npmjs.com/package/celebrate - CELEBRATE DOCUMENTATION
-// Segments
-// An enum containing all the segments of req objects that celebrate can
-// validate against.
-
-// {
-//   BODY: 'body',
-//   COOKIES: 'cookies',
-//   HEADERS: 'headers',
-//   PARAMS: 'params',
-//   QUERY: 'query',
-//   SIGNEDCOOKIES: 'signedCookies',
-// }
-
-
-// 4. Validate data from other sources
-// On top of validating the request body, celebrate also **allows you to validate headers, parameters, or req.query. Use parameters to extract and validate the item and user IDs:
-// module.exports.validateId = celebrate({
-//   params: Joi.object().keys({
-//     // ...
-//   }),
-// });
